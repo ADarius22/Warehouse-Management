@@ -3,14 +3,16 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChang
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 
 import { routes } from './app.routes';
+import { authInterceptor } from './core/auth.interceptor';
 import { errorInterceptor } from './core/error.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    // withComponentInputBinding: route params (e.g. :id) are passed to components as inputs
+    // withComponentInputBinding: route and query params (e.g. :id, ?returnUrl) become component inputs
     provideRouter(routes, withComponentInputBinding()),
-    provideHttpClient(withInterceptors([errorInterceptor])),
+    // order matters: authInterceptor adds the token first, errorInterceptor shows failures
+    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
   ],
 };

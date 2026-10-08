@@ -3,7 +3,9 @@
     <h1>Storage locations</h1>
     <p>Aisle / rack / shelf slots, their capacity and how full they are</p>
   </div>
-  <button class="btn" (click)="openCreate()">+ New location</button>
+  @if (auth.isAdmin()) {
+    <button class="btn" (click)="openCreate()">+ New location</button>
+  }
 </header>
 
 <div class="tabs">
@@ -46,8 +48,10 @@
                 }
               </td>
               <td class="actions">
-                <button class="link-btn" (click)="openEdit(l)">Edit</button>
-                <button class="link-btn danger" (click)="remove(l)">Delete</button>
+                @if (auth.isAdmin()) {
+                  <button class="link-btn" (click)="openEdit(l)">Edit</button>
+                  <button class="link-btn danger" (click)="remove(l)">Delete</button>
+                }
               </td>
             </tr>
           } @empty {

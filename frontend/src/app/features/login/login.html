@@ -1,0 +1,37 @@
+<div class="login-page">
+  <section class="card login-card">
+    <div class="brand login-brand">
+      <span class="brand-mark">W</span>
+      <span>Warehouse<br /><small>Management System</small></span>
+    </div>
+
+    <h1>Sign in</h1>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field">
+        <label for="username">Username</label>
+        <input id="username" formControlName="username" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" formControlName="password" autocomplete="current-password" />
+      </div>
+
+      @if (error()) {
+        <div class="alert" role="alert">{{ error() }}</div>
+      }
+
+      <button type="submit" class="btn login-submit" [disabled]="busy()">
+        {{ busy() ? 'Signing in…' : 'Sign in' }}
+      </button>
+    </form>
+
+    <div class="demo-accounts">
+      <span class="muted">Demo accounts:</span>
+      <button type="button" class="link-btn" (click)="useDemo('admin', 'admin123')">admin</button>
+      <span class="muted">(full access) ·</span>
+      <button type="button" class="link-btn" (click)="useDemo('operator', 'operator123')">operator</button>
+      <span class="muted">(stock and orders)</span>
+    </div>
+  </section>
+</div>

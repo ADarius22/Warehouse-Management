@@ -4,13 +4,16 @@ import { catchError, throwError } from 'rxjs';
 import { ProblemDetail } from './models';
 import { NotificationService } from './notification.service';
 
-/** Shows every failed API call as an error toast, using the backend's problem-detail message. */
+/** Shows failed API calls as an error toast, using the backend's problem-detail message. */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const notifications = inject(NotificationService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      notifications.error(describe(error));
+      // 401 is handled by the auth interceptor (redirect to login) and the login page itself
+      if (error.status !== 401) {
+        notifications.error(describe(error));
+      }
       return throwError(() => error);
     }),
   );

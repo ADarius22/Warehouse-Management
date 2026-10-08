@@ -76,6 +76,7 @@
                 <th>From → To</th>
                 <th class="num">Qty</th>
                 <th>Reference</th>
+                <th>By</th>
               </tr>
             </thead>
             <tbody>
@@ -87,9 +88,10 @@
                   <td class="mono">{{ m.fromLocation ?? '—' }} → {{ m.toLocation ?? '—' }}</td>
                   <td class="num">{{ m.quantity }}</td>
                   <td class="muted">{{ m.reference }}</td>
+                  <td class="muted">{{ m.performedBy ?? 'system' }}</td>
                 </tr>
               } @empty {
-                <tr><td colspan="6" class="empty">No movements.</td></tr>
+                <tr><td colspan="7" class="empty">No movements.</td></tr>
               }
             </tbody>
           </table>

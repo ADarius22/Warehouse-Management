@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LocationRequest, Page, StorageLocation, Zone, ZONES } from '../../core/models';
+import { AuthService } from '../../core/auth.service';
 import { NotificationService } from '../../core/notification.service';
 import { LocationService } from '../../core/services';
 import { Pagination } from '../../shared/pagination';
@@ -14,6 +15,8 @@ export class LocationsPage implements OnInit {
   private readonly locationService = inject(LocationService);
   private readonly notifications = inject(NotificationService);
   private readonly fb = inject(FormBuilder);
+  /** Only admins may change master data (the backend enforces this too). */
+  protected readonly auth = inject(AuthService);
 
   protected readonly zones = ZONES;
   protected readonly page = signal<Page<StorageLocation> | null>(null);

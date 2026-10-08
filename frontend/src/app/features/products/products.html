@@ -3,7 +3,9 @@
     <h1>Products</h1>
     <p>Article master data and total stock per product</p>
   </div>
-  <button class="btn" (click)="openCreate()">+ New product</button>
+  @if (auth.isAdmin()) {
+    <button class="btn" (click)="openCreate()">+ New product</button>
+  }
 </header>
 
 <div [class.split]="formOpen()">
@@ -40,8 +42,10 @@
                 }
               </td>
               <td class="actions">
-                <button class="link-btn" (click)="openEdit(p)">Edit</button>
-                <button class="link-btn danger" (click)="remove(p)">Delete</button>
+                @if (auth.isAdmin()) {
+                  <button class="link-btn" (click)="openEdit(p)">Edit</button>
+                  <button class="link-btn danger" (click)="remove(p)">Delete</button>
+                }
               </td>
             </tr>
           } @empty {

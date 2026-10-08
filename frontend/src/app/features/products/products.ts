@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { Page, Product, ProductRequest, UNITS } from '../../core/models';
+import { AuthService } from '../../core/auth.service';
 import { NotificationService } from '../../core/notification.service';
 import { ProductService } from '../../core/services';
 import { Pagination } from '../../shared/pagination';
@@ -16,6 +17,8 @@ export class ProductsPage implements OnInit {
   private readonly productService = inject(ProductService);
   private readonly notifications = inject(NotificationService);
   private readonly fb = inject(FormBuilder);
+  /** Only admins may change master data (the backend enforces this too). */
+  protected readonly auth = inject(AuthService);
 
   protected readonly units = UNITS;
   protected readonly page = signal<Page<Product> | null>(null);

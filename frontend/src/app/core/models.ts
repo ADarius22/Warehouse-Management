@@ -91,6 +91,7 @@ export interface Movement {
   toLocation: string | null;
   quantity: number;
   reference: string | null;
+  performedBy: string | null;
   createdAt: string;
 }
 

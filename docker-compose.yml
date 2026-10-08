@@ -1,0 +1,42 @@
+# Runs the whole system with one command:   docker compose up --build
+# Then open http://localhost:8081  (log in with admin / admin123)
+#
+# Secrets can be overridden in a local .env file next to this one (it is git-ignored), e.g.
+#   JWT_SECRET=a-long-random-string-of-at-least-32-characters
+#   DB_PASSWORD=something-better
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: wms
+      POSTGRES_USER: wms
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-wms}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wms -d wms"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/wms
+      DB_USERNAME: wms
+      DB_PASSWORD: ${DB_PASSWORD:-wms}
+      JWT_SECRET: ${JWT_SECRET:-docker-demo-secret-change-me-0123456789}
+    depends_on:
+      db:
+        condition: service_healthy   # wait until PostgreSQL accepts connections
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend
+
+volumes:
+  db-data:   # database files survive "docker compose down" (use "down -v" to reset)
