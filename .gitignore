@@ -1,0 +1,12 @@
+﻿# IDEs
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local environment overrides
+.env

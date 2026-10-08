@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: wms-backend
+  datasource:
+    # Override with environment variables in other environments
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/wms}
+    username: ${DB_USERNAME:wms}
+    password: ${DB_PASSWORD:wms}
+  jpa:
+    # Keep DB sessions short: no lazy loading in controllers/JSON serialization
+    open-in-view: false
+    hibernate:
+      # Flyway owns the schema; Hibernate only checks that entities match it
+      ddl-auto: validate
+    properties:
+      hibernate:
+        # Load lazy collections in batches instead of one query per row (avoids N+1)
+        default_batch_fetch_size: 50
+  flyway:
+    enabled: true
+
+server:
+  port: 8080
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    # Set SQL_LOG_LEVEL=debug to see every SQL statement Hibernate runs
+    org.hibernate.SQL: ${SQL_LOG_LEVEL:info}
