@@ -6,6 +6,50 @@ Built with **Java 21 · Spring Boot · Spring Security (JWT) · Hibernate/JPA ·
 
 ![Dashboard](docs/screenshots/dashboard.jpg)
 
+## Technologies used
+
+### Backend
+| Technology | What it is used for in this project |
+|---|---|
+| **Java 21** | Main backend language; records are used for DTOs (request/response objects) |
+| **Spring Boot 4** | Application framework: configuration, dependency injection, embedded web server |
+| **Spring Web MVC (REST)** | REST API controllers (`/api/products`, `/api/orders`, ...) returning JSON |
+| **Bean Validation** | Checks incoming data (required fields, min/max, formats) before it reaches the business logic |
+| **Spring Security** | Login, role-based access rules (ADMIN / OPERATOR), 401/403 handling |
+| **JWT (OAuth2 Resource Server, Nimbus)** | Signed access tokens issued at login and validated on every request |
+| **BCrypt** | Hashing user passwords; plain passwords are never stored |
+| **Hibernate / JPA** | Maps Java entities (Product, StockItem, Order...) to database tables; relationships, transactions, optimistic and pessimistic locking |
+| **Spring Data JPA** | Repositories with derived queries, JPQL, native SQL and pagination |
+| **SQL** | Database schema, constraints and indexes, demo data, and hand-written reporting queries (low stock, capacity per zone) |
+| **PostgreSQL** | The relational database that stores all data |
+| **Flyway** | Versioned SQL migrations that create and evolve the schema (`V1`, `V2`, `V3`...) |
+| **springdoc OpenAPI / Swagger UI** | Interactive API documentation at `/swagger-ui.html` |
+| **Maven (wrapper)** | Builds the project and manages dependencies, with no Maven install needed |
+| **JUnit 5, AssertJ, MockMvc** | Unit and integration tests that call the real API over HTTP |
+| **Spring Security Test** | Testing endpoints as specific users and roles |
+| **H2 (tests only)** | In-memory database in PostgreSQL mode, so tests run without a database server |
+
+### Frontend
+| Technology | What it is used for in this project |
+|---|---|
+| **Angular 20** | Single-page application: dashboard, products, locations, stock and orders screens |
+| **TypeScript** | Typed code; interfaces mirror the backend DTOs |
+| **Angular Signals** | Reactive state of pages and of the logged-in user |
+| **Reactive Forms** | Validated forms, including a dynamic list of order lines (`FormArray`) |
+| **Angular Router** | Navigation, lazy-loaded pages, route guard that requires login |
+| **HttpClient + interceptors** | API calls; automatically adds the JWT and shows server errors as notifications |
+| **RxJS** | Handling asynchronous HTTP responses and debounced search |
+| **SCSS** | Styling with shared design tokens (colors, spacing) |
+| **Jasmine + Karma** | Unit and component tests, run in a headless browser |
+
+### Infrastructure and tools
+| Technology | What it is used for in this project |
+|---|---|
+| **Docker** | Multi-stage images for the backend (JRE) and frontend (nginx) |
+| **Docker Compose** | Starts PostgreSQL, backend and frontend together with one command |
+| **nginx** | Serves the built Angular app and forwards `/api` calls to the backend |
+| **Git & GitHub** | Version control and hosting of the source code |
+
 ## Features
 
 - **Login with roles**: JWT authentication. **ADMIN** manages products and locations; **OPERATOR** receives and moves stock and picks and ships orders. The UI hides actions your role cannot perform, and the API enforces the same rules.
