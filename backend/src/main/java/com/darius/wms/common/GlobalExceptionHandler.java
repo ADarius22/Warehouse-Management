@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,6 +45,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ProblemDetail handleOptimisticLock(ObjectOptimisticLockingFailureException ex) {
         return problem(HttpStatus.CONFLICT, "Concurrent modification",
                 "The data was changed by another request. Please retry.");
+    }
+
+    /** Wrong username or password at login. Deliberately vague: do not reveal which one was wrong. */
+    @ExceptionHandler(AuthenticationException.class)
+    ProblemDetail handleAuthentication(AuthenticationException ex) {
+        return problem(HttpStatus.UNAUTHORIZED, "Login failed", "Invalid username or password");
     }
 
     @ExceptionHandler(PropertyReferenceException.class)

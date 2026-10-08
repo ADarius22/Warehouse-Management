@@ -2,6 +2,7 @@ package com.darius.wms.stock;
 
 import com.darius.wms.location.StorageLocation;
 import com.darius.wms.product.Product;
+import com.darius.wms.security.CurrentUser;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -49,6 +50,10 @@ public class StockMovement {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    /** Username of the logged-in user who caused the movement. */
+    @Column(name = "performed_by", length = 50, updatable = false)
+    private String performedBy;
+
     protected StockMovement() {
         // required by JPA
     }
@@ -62,6 +67,7 @@ public class StockMovement {
         this.quantity = quantity;
         this.reference = reference;
         this.createdAt = Instant.now();
+        this.performedBy = CurrentUser.username();
     }
 
     public static StockMovement inbound(Product product, StorageLocation to, int quantity, String reference) {
@@ -85,4 +91,5 @@ public class StockMovement {
     public MovementType getType() { return type; }
     public String getReference() { return reference; }
     public Instant getCreatedAt() { return createdAt; }
+    public String getPerformedBy() { return performedBy; }
 }

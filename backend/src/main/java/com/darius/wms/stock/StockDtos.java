@@ -56,6 +56,7 @@ public final class StockDtos {
             String toLocation,
             int quantity,
             String reference,
+            String performedBy,
             Instant createdAt) {
 
         public static MovementResponse from(StockMovement m) {
@@ -63,7 +64,7 @@ public final class StockDtos {
                     m.getProduct().getName(),
                     m.getFromLocation() == null ? null : m.getFromLocation().getCode(),
                     m.getToLocation() == null ? null : m.getToLocation().getCode(),
-                    m.getQuantity(), m.getReference(), m.getCreatedAt());
+                    m.getQuantity(), m.getReference(), m.getPerformedBy(), m.getCreatedAt());
         }
     }
 }
