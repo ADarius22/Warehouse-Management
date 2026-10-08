@@ -1,0 +1,88 @@
+<header class="page-header">
+  <div>
+    <h1>Outbound orders</h1>
+    <p>Customer orders waiting to be picked and shipped</p>
+  </div>
+  <button class="btn" (click)="openCreate()">+ New order</button>
+</header>
+
+<div class="tabs">
+  <button [class.active]="status() === null" (click)="filter(null)">All</button>
+  @for (s of statuses; track s) {
+    <button [class.active]="status() === s" (click)="filter(s)">{{ s }}</button>
+  }
+</div>
+
+<div [class.split]="formOpen()">
+  <section class="card card-flush">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Order</th>
+            <th>Customer</th>
+            <th>Status</th>
+            <th class="num">Lines</th>
+            <th class="num">Units</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (o of page()?.content; track o.id) {
+            <tr class="clickable" (click)="open(o)">
+              <td class="mono"><a>{{ o.orderNumber }}</a></td>
+              <td>{{ o.customerName }}</td>
+              <td><span class="badge badge-{{ o.status }}">{{ o.status }}</span></td>
+              <td class="num">{{ o.lineCount }}</td>
+              <td class="num">{{ o.totalUnits }}</td>
+              <td class="muted">{{ o.createdAt | date: 'dd MMM yyyy, HH:mm' }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="6" class="empty">No orders.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    @if (page(); as p) {
+      <app-pagination [page]="p.page" [totalPages]="p.totalPages" [totalElements]="p.totalElements"
+                      (pageChange)="goTo($event)" />
+    }
+  </section>
+
+  @if (formOpen()) {
+    <section class="card">
+      <h2>New order</h2>
+      <form class="form" [formGroup]="form" (ngSubmit)="save()">
+        <div class="field">
+          <label for="customer">Customer</label>
+          <input id="customer" formControlName="customerName" placeholder="Customer name" />
+        </div>
+
+        <div class="field">
+          <label>Lines</label>
+          @for (line of lines.controls; track line; let i = $index) {
+            <div class="order-line" [formGroup]="line">
+              <select formControlName="productId" [attr.aria-label]="'Product for line ' + (i + 1)">
+                <option [ngValue]="null" disabled>Product…</option>
+                @for (p of products(); track p.id) {
+                  <option [ngValue]="p.id">{{ p.sku }} ({{ p.totalQuantity }} in stock)</option>
+                }
+              </select>
+              <input type="number" min="1" formControlName="quantity" [attr.aria-label]="'Quantity for line ' + (i + 1)" />
+              <button type="button" class="link-btn danger" [disabled]="lines.length === 1" (click)="removeLine(i)"
+                      aria-label="Remove line">✕</button>
+            </div>
+          }
+          <button type="button" class="btn btn-ghost btn-sm" style="align-self: flex-start" (click)="addLine()">
+            + Add line
+          </button>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost" (click)="formOpen.set(false)">Cancel</button>
+          <button type="submit" class="btn" [disabled]="saving()">Create order</button>
+        </div>
+      </form>
+    </section>
+  }
+</div>

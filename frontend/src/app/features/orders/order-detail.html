@@ -1,0 +1,81 @@
+<a routerLink="/orders" class="muted">← Back to orders</a>
+
+@if (order(); as o) {
+  <header class="page-header" style="margin-top: 12px">
+    <div>
+      <h1>
+        <span class="mono" style="font-size: 22px">{{ o.orderNumber }}</span>
+        <span class="badge badge-{{ o.status }}" style="vertical-align: middle; margin-left: 8px">{{ o.status }}</span>
+      </h1>
+      <p>{{ o.customerName }}</p>
+    </div>
+    <div class="toolbar">
+      @if (o.status === 'NEW') {
+        <button class="btn btn-ghost" [disabled]="busy()" (click)="cancel()">Cancel order</button>
+        <button class="btn" [disabled]="busy()" (click)="pick()">Pick from stock</button>
+      }
+      @if (o.status === 'PICKED') {
+        <button class="btn" [disabled]="busy()" (click)="ship()">Mark as shipped</button>
+      }
+    </div>
+  </header>
+
+  <div class="split">
+    <section class="card card-flush">
+      <div class="card-head"><h2>Lines</h2><span class="muted">{{ totalUnits() }} units</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Product</th>
+              <th class="num">Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (line of o.lines; track line.id) {
+              <tr>
+                <td class="mono">{{ line.sku }}</td>
+                <td>{{ line.productName }}</td>
+                <td class="num">{{ line.quantity }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Timeline</h2>
+      <ol class="timeline">
+        <li class="done">
+          <strong>Created</strong>
+          <span class="muted">{{ o.createdAt | date: 'dd MMM yyyy, HH:mm' }}</span>
+        </li>
+        @if (o.status === 'CANCELLED') {
+          <li class="done cancelled">
+            <strong>Cancelled</strong>
+            <span class="muted">{{ o.updatedAt | date: 'dd MMM yyyy, HH:mm' }}</span>
+          </li>
+        } @else {
+          <li [class.done]="o.pickedAt">
+            <strong>Picked</strong>
+            <span class="muted">{{ o.pickedAt ? (o.pickedAt | date: 'dd MMM yyyy, HH:mm') : 'Pending' }}</span>
+          </li>
+          <li [class.done]="o.shippedAt">
+            <strong>Shipped</strong>
+            <span class="muted">{{ o.shippedAt ? (o.shippedAt | date: 'dd MMM yyyy, HH:mm') : 'Pending' }}</span>
+          </li>
+        }
+      </ol>
+      @if (o.status === 'NEW') {
+        <p class="muted">
+          Picking takes the units out of stock (largest locations first) and records an OUTBOUND movement per
+          location. If any line is short, nothing is picked.
+        </p>
+      }
+    </section>
+  </div>
+} @else {
+  <div class="empty">Loading order…</div>
+}

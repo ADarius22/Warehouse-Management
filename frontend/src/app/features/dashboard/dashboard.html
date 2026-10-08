@@ -1,0 +1,125 @@
+<header class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p>Live overview of inventory, capacity and open work</p>
+  </div>
+  <a class="btn" routerLink="/orders">+ New order</a>
+</header>
+
+@if (data(); as d) {
+  <section class="grid grid-4">
+    <div class="card kpi">
+      <div class="kpi-label">Products</div>
+      <div class="kpi-value">{{ d.productCount | number }}</div>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-label">Active locations</div>
+      <div class="kpi-value">{{ d.activeLocationCount | number }}</div>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-label">Units in stock</div>
+      <div class="kpi-value">{{ d.totalUnits | number }}</div>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-label">Open orders</div>
+      <div class="kpi-value">{{ d.openOrders | number }}</div>
+    </div>
+  </section>
+
+  <section class="grid grid-2" style="margin-top: 16px">
+    <div class="card">
+      <h2>Capacity by zone</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Zone</th>
+            <th class="num">Locations</th>
+            <th class="num">Used / capacity</th>
+            <th style="width: 35%">Utilization</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (z of d.zones; track z.zone) {
+            <tr>
+              <td>{{ z.zone }}</td>
+              <td class="num">{{ z.locationCount }}</td>
+              <td class="num">{{ z.usedCapacity | number }} / {{ z.totalCapacity | number }}</td>
+              <td>
+                <div class="bar" [class.high]="z.utilizationPercent >= 80" [title]="z.utilizationPercent + '%'">
+                  <span [style.width.%]="z.utilizationPercent"></span>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Low stock <span class="badge badge-low">{{ d.lowStock.length }}</span></h2>
+      @if (d.lowStock.length === 0) {
+        <div class="empty">All products are above their minimum level.</div>
+      } @else {
+        <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Product</th>
+              <th class="num">In stock</th>
+              <th class="num">Minimum</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of d.lowStock; track item.productId) {
+              <tr>
+                <td class="mono">{{ item.sku }}</td>
+                <td>{{ item.name }}</td>
+                <td class="num">{{ item.totalQuantity }}</td>
+                <td class="num">{{ item.minStockLevel }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="card card-flush" style="margin-top: 16px">
+    <div class="card-head">
+      <h2>Recent stock movements</h2>
+      <a routerLink="/stock">View all →</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>When</th>
+            <th>Type</th>
+            <th>Product</th>
+            <th>From → To</th>
+            <th class="num">Qty</th>
+            <th>Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (m of d.recentMovements; track m.id) {
+            <tr>
+              <td class="muted">{{ m.createdAt | date: 'dd MMM, HH:mm' }}</td>
+              <td><span class="badge badge-{{ m.type }}">{{ m.type }}</span></td>
+              <td><span class="mono">{{ m.sku }}</span> · {{ m.productName }}</td>
+              <td class="mono">{{ m.fromLocation ?? '—' }} → {{ m.toLocation ?? '—' }}</td>
+              <td class="num">{{ m.quantity }}</td>
+              <td class="muted">{{ m.reference }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="6" class="empty">No movements yet.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+} @else {
+  <div class="empty">Loading dashboard…</div>
+}
